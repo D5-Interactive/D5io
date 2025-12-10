@@ -228,6 +228,26 @@
         let slideInterval;
         let productsLoaded = false;
 
+        // Simple markdown parser fallback when marked.js is not available
+        function simpleMarkdownToHtml(markdown) {
+            // This is a minimal fallback for basic markdown
+            return markdown
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, ' ');
+        }
+
+        // Parse markdown using marked.js or fallback
+        function parseMarkdown(markdown) {
+            if (typeof marked !== 'undefined' && marked.parse) {
+                return marked.parse(markdown);
+            } else {
+                console.warn('marked.js not available, using simple fallback parser');
+                return '<p>' + simpleMarkdownToHtml(markdown) + '</p>';
+            }
+        }
+
         // Parse simple frontmatter from markdown content
         function parseFrontmatter(content) {
             const lines = content.split('\n');
@@ -297,7 +317,7 @@
                 slide.innerHTML = `
                     <div class="product-icon">${icon}</div>
                     <h2>${title}</h2>
-                    <div class="slide-content">${marked.parse(product.body)}</div>
+                    <div class="slide-content">${parseMarkdown(product.body)}</div>
                     ${tags.length > 0 ? `
                         <div class="features">
                             ${tags.map(tag => `<span class="feature-tag">${tag}</span>`).join('')}
@@ -309,7 +329,7 @@
                 const title = generateTitle(product.filename);
                 slide.innerHTML = `
                     <h2>${title}</h2>
-                    <div class="slide-content">${marked.parse(product.body)}</div>
+                    <div class="slide-content">${parseMarkdown(product.body)}</div>
                 `;
             }
 
