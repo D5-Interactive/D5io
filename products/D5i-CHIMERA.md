@@ -1,4 +1,4 @@
-# D5i-CHIMERA Product Card
+# D5i-CHIMERA
 
 ## Security Sentinel for GitHub
 
