@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="D5io - Innovative Software Solutions">
+    <title>D5io - Software Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .slideshow-container {
+            max-width: 900px;
+            position: relative;
+            margin: 40px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px 40px;
+            text-align: center;
+            animation: fadeIn 1s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .slide p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .product-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .feature-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .dots-container {
+            text-align: center;
+            padding: 20px;
+            background: white;
+        }
+
+        .dot {
+            height: 15px;
+            width: 15px;
+            margin: 0 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: none;
+            padding: 0;
+        }
+
+        .dot.active {
+            background-color: #667eea;
+        }
+
+        .dot:hover {
+            background-color: #764ba2;
+        }
+
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            margin-top: -22px;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            transition: 0.3s;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            border: none;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            .slide {
+                padding: 40px 20px;
+            }
+
+            .slide h2 {
+                font-size: 1.8em;
+            }
+
+            .slide p {
+                font-size: 1em;
+            }
+
+            .product-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>D5io</h1>
+            <p>Innovative Software Solutions for Modern Businesses</p>
+        </header>
+
+        <div class="slideshow-container">
+            <button class="prev" onclick="changeSlide(-1)" aria-label="Previous slide">&#10094;</button>
+            <button class="next" onclick="changeSlide(1)" aria-label="Next slide">&#10095;</button>
+
+            <div class="slide active">
+                <div class="product-icon">🚀</div>
+                <h2>Cloud Platform</h2>
+                <p>Enterprise-grade cloud infrastructure that scales with your business. Deploy, manage, and monitor your applications with ease.</p>
+                <div class="features">
+                    <span class="feature-tag">Scalable</span>
+                    <span class="feature-tag">Secure</span>
+                    <span class="feature-tag">24/7 Support</span>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="product-icon">📊</div>
+                <h2>Analytics Suite</h2>
+                <p>Powerful data analytics and visualization tools to gain insights from your business data. Make data-driven decisions with confidence.</p>
+                <div class="features">
+                    <span class="feature-tag">Real-time</span>
+                    <span class="feature-tag">AI-Powered</span>
+                    <span class="feature-tag">Customizable</span>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="product-icon">🔒</div>
+                <h2>Security Framework</h2>
+                <p>Comprehensive security solutions to protect your applications and data. Industry-leading encryption and compliance standards.</p>
+                <div class="features">
+                    <span class="feature-tag">Enterprise Security</span>
+                    <span class="feature-tag">Compliance Ready</span>
+                    <span class="feature-tag">Zero Trust</span>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="product-icon">⚡</div>
+                <h2>API Gateway</h2>
+                <p>Fast and reliable API management platform. Build, secure, and scale your APIs with our powerful gateway solution.</p>
+                <div class="features">
+                    <span class="feature-tag">High Performance</span>
+                    <span class="feature-tag">Rate Limiting</span>
+                    <span class="feature-tag">Analytics</span>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="product-icon">🤖</div>
+                <h2>AI Assistant</h2>
+                <p>Intelligent automation and AI-powered tools to streamline your workflows. Enhance productivity with cutting-edge machine learning.</p>
+                <div class="features">
+                    <span class="feature-tag">Machine Learning</span>
+                    <span class="feature-tag">Automation</span>
+                    <span class="feature-tag">Natural Language</span>
+                </div>
+            </div>
+
+            <div class="dots-container">
+                <button class="dot active" onclick="setSlide(0)" aria-label="Go to slide 1"></button>
+                <button class="dot" onclick="setSlide(1)" aria-label="Go to slide 2"></button>
+                <button class="dot" onclick="setSlide(2)" aria-label="Go to slide 3"></button>
+                <button class="dot" onclick="setSlide(3)" aria-label="Go to slide 4"></button>
+                <button class="dot" onclick="setSlide(4)" aria-label="Go to slide 5"></button>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 D5io. All rights reserved.</p>
+            <p><a href="https://github.com/D5-Interactive/D5io" target="_blank">Visit us on GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        let slideInterval;
+
+        function showSlide() {
+            const slides = document.getElementsByClassName('slide');
+            const dots = document.getElementsByClassName('dot');
+
+            if (currentSlide >= slides.length) {
+                currentSlide = 0;
+            }
+            if (currentSlide < 0) {
+                currentSlide = slides.length - 1;
+            }
+
+            // Hide all slides and remove aria-current
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove('active');
+                dots[i].classList.remove('active');
+                dots[i].removeAttribute('aria-current');
+            }
+
+            // Show current slide and set aria-current
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+            dots[currentSlide].setAttribute('aria-current', 'true');
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide();
+            resetInterval();
+        }
+
+        function setSlide(n) {
+            currentSlide = n;
+            showSlide();
+            resetInterval();
+        }
+
+        function nextSlide() {
+            currentSlide++;
+            showSlide();
+        }
+
+        function resetInterval() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function pauseSlideshow() {
+            clearInterval(slideInterval);
+        }
+
+        function resumeSlideshow() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        // Initialize slideshow
+        showSlide();
+        slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+
+        // Pause slideshow on hover or focus for accessibility (WCAG compliance)
+        const slideshowContainer = document.querySelector('.slideshow-container');
+        slideshowContainer.addEventListener('mouseenter', pauseSlideshow);
+        slideshowContainer.addEventListener('mouseleave', resumeSlideshow);
+        slideshowContainer.addEventListener('focusin', pauseSlideshow);
+        slideshowContainer.addEventListener('focusout', resumeSlideshow);
+    </script>
+</body>
+</html>
