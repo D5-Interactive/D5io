@@ -206,68 +206,9 @@
             <button class="prev" onclick="changeSlide(-1)" aria-label="Previous slide">&#10094;</button>
             <button class="next" onclick="changeSlide(1)" aria-label="Next slide">&#10095;</button>
 
-            <div class="slide active">
-                <div class="product-icon">🚀</div>
-                <h2>Cloud Platform</h2>
-                <p>Enterprise-grade cloud infrastructure that scales with your business. Deploy, manage, and monitor your applications with ease.</p>
-                <div class="features">
-                    <span class="feature-tag">Scalable</span>
-                    <span class="feature-tag">Secure</span>
-                    <span class="feature-tag">24/7 Support</span>
-                </div>
-            </div>
+            <div id="slides-container"></div>
 
-            <div class="slide">
-                <div class="product-icon">📊</div>
-                <h2>Analytics Suite</h2>
-                <p>Powerful data analytics and visualization tools to gain insights from your business data. Make data-driven decisions with confidence.</p>
-                <div class="features">
-                    <span class="feature-tag">Real-time</span>
-                    <span class="feature-tag">AI-Powered</span>
-                    <span class="feature-tag">Customizable</span>
-                </div>
-            </div>
-
-            <div class="slide">
-                <div class="product-icon">🔒</div>
-                <h2>Security Framework</h2>
-                <p>Comprehensive security solutions to protect your applications and data. Industry-leading encryption and compliance standards.</p>
-                <div class="features">
-                    <span class="feature-tag">Enterprise Security</span>
-                    <span class="feature-tag">Compliance Ready</span>
-                    <span class="feature-tag">Zero Trust</span>
-                </div>
-            </div>
-
-            <div class="slide">
-                <div class="product-icon">⚡</div>
-                <h2>API Gateway</h2>
-                <p>Fast and reliable API management platform. Build, secure, and scale your APIs with our powerful gateway solution.</p>
-                <div class="features">
-                    <span class="feature-tag">High Performance</span>
-                    <span class="feature-tag">Rate Limiting</span>
-                    <span class="feature-tag">Analytics</span>
-                </div>
-            </div>
-
-            <div class="slide">
-                <div class="product-icon">🤖</div>
-                <h2>AI Assistant</h2>
-                <p>Intelligent automation and AI-powered tools to streamline your workflows. Enhance productivity with cutting-edge machine learning.</p>
-                <div class="features">
-                    <span class="feature-tag">Machine Learning</span>
-                    <span class="feature-tag">Automation</span>
-                    <span class="feature-tag">Natural Language</span>
-                </div>
-            </div>
-
-            <div class="dots-container">
-                <button class="dot active" onclick="setSlide(0)" aria-label="Go to slide 1"></button>
-                <button class="dot" onclick="setSlide(1)" aria-label="Go to slide 2"></button>
-                <button class="dot" onclick="setSlide(2)" aria-label="Go to slide 3"></button>
-                <button class="dot" onclick="setSlide(3)" aria-label="Go to slide 4"></button>
-                <button class="dot" onclick="setSlide(4)" aria-label="Go to slide 5"></button>
-            </div>
+            <div class="dots-container" id="dots-container"></div>
         </div>
 
         <footer>
@@ -279,10 +220,199 @@
     <script>
         let currentSlide = 0;
         let slideInterval;
+        let slidesLoaded = false;
+
+        // Simple markdown parser for basic formatting
+        function parseMarkdown(text) {
+            // Convert basic markdown to HTML
+            let html = text;
+            
+            // Bold: **text** or __text__
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            
+            // Italic: *text* or _text_
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+            
+            // Links: [text](url)
+            html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+            
+            // Line breaks
+            html = html.replace(/\n/g, '<br>');
+            
+            return html;
+        }
+
+        // Parse frontmatter from markdown content
+        function parseFrontmatter(content) {
+            const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
+            const match = content.match(frontmatterRegex);
+            
+            if (!match) {
+                return { frontmatter: {}, body: content };
+            }
+            
+            const frontmatterText = match[1];
+            const body = match[2];
+            const frontmatter = {};
+            
+            // Parse simple YAML-like frontmatter
+            const lines = frontmatterText.split('\n');
+            for (const line of lines) {
+                const colonIndex = line.indexOf(':');
+                if (colonIndex > -1) {
+                    const key = line.substring(0, colonIndex).trim();
+                    let value = line.substring(colonIndex + 1).trim();
+                    
+                    // Parse array values [item1, item2, item3]
+                    if (value.startsWith('[') && value.endsWith(']')) {
+                        value = value.substring(1, value.length - 1)
+                            .split(',')
+                            .map(item => item.trim());
+                    }
+                    
+                    frontmatter[key] = value;
+                }
+            }
+            
+            return { frontmatter, body };
+        }
+
+        // Create a slide DOM element from product data
+        function createSlide(product) {
+            const slide = document.createElement('div');
+            slide.className = 'slide';
+            
+            // Add product icon
+            const icon = document.createElement('div');
+            icon.className = 'product-icon';
+            icon.textContent = product.icon || '📦';
+            slide.appendChild(icon);
+            
+            // Add title
+            const title = document.createElement('h2');
+            title.textContent = product.title || 'Product';
+            slide.appendChild(title);
+            
+            // Add description (rendered markdown)
+            const description = document.createElement('p');
+            description.innerHTML = parseMarkdown(product.body || '');
+            slide.appendChild(description);
+            
+            // Add features/tags
+            if (product.tags && product.tags.length > 0) {
+                const features = document.createElement('div');
+                features.className = 'features';
+                
+                product.tags.forEach(tag => {
+                    const tagSpan = document.createElement('span');
+                    tagSpan.className = 'feature-tag';
+                    tagSpan.textContent = tag;
+                    features.appendChild(tagSpan);
+                });
+                
+                slide.appendChild(features);
+            }
+            
+            return slide;
+        }
+
+        // Load products from manifest and markdown files
+        async function loadProducts() {
+            try {
+                // Fetch manifest
+                const manifestResponse = await fetch('/products/products.json');
+                if (!manifestResponse.ok) {
+                    throw new Error('Failed to load products manifest');
+                }
+                const manifest = await manifestResponse.json();
+                
+                if (!manifest || manifest.length === 0) {
+                    throw new Error('No products found in manifest');
+                }
+                
+                // Load each product markdown file
+                const products = [];
+                for (const filename of manifest) {
+                    try {
+                        const response = await fetch(`/products/${filename}`);
+                        if (!response.ok) {
+                            console.warn(`Failed to load product: ${filename}`);
+                            continue;
+                        }
+                        
+                        const content = await response.text();
+                        const { frontmatter, body } = parseFrontmatter(content);
+                        
+                        products.push({
+                            icon: frontmatter.icon,
+                            title: frontmatter.title,
+                            tags: frontmatter.tags,
+                            body: body.trim()
+                        });
+                    } catch (error) {
+                        console.warn(`Error loading product ${filename}:`, error);
+                    }
+                }
+                
+                if (products.length === 0) {
+                    throw new Error('No products could be loaded');
+                }
+                
+                // Create slide elements
+                const slidesContainer = document.getElementById('slides-container');
+                const dotsContainer = document.getElementById('dots-container');
+                
+                products.forEach((product, index) => {
+                    // Create slide
+                    const slide = createSlide(product);
+                    if (index === 0) {
+                        slide.classList.add('active');
+                    }
+                    slidesContainer.appendChild(slide);
+                    
+                    // Create dot
+                    const dot = document.createElement('button');
+                    dot.className = 'dot';
+                    if (index === 0) {
+                        dot.classList.add('active');
+                        dot.setAttribute('aria-current', 'true');
+                    }
+                    dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                    dot.onclick = () => setSlide(index);
+                    dotsContainer.appendChild(dot);
+                });
+                
+                slidesLoaded = true;
+                
+                // Initialize slideshow
+                showSlide();
+                slideInterval = setInterval(nextSlide, 5000);
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                
+                // Show fallback slide
+                const slidesContainer = document.getElementById('slides-container');
+                const fallbackSlide = document.createElement('div');
+                fallbackSlide.className = 'slide active';
+                fallbackSlide.innerHTML = `
+                    <div class="product-icon">⚠️</div>
+                    <h2>Products Coming Soon</h2>
+                    <p>We're currently updating our product catalog. Please check back later.</p>
+                `;
+                slidesContainer.appendChild(fallbackSlide);
+            }
+        }
 
         function showSlide() {
+            if (!slidesLoaded) return;
+            
             const slides = document.getElementsByClassName('slide');
             const dots = document.getElementsByClassName('dot');
+            
+            if (slides.length === 0) return;
 
             if (currentSlide >= slides.length) {
                 currentSlide = 0;
@@ -305,18 +435,21 @@
         }
 
         function changeSlide(n) {
+            if (!slidesLoaded) return;
             currentSlide += n;
             showSlide();
             resetInterval();
         }
 
         function setSlide(n) {
+            if (!slidesLoaded) return;
             currentSlide = n;
             showSlide();
             resetInterval();
         }
 
         function nextSlide() {
+            if (!slidesLoaded) return;
             currentSlide++;
             showSlide();
         }
@@ -331,12 +464,13 @@
         }
 
         function resumeSlideshow() {
-            slideInterval = setInterval(nextSlide, 5000);
+            if (slidesLoaded) {
+                slideInterval = setInterval(nextSlide, 5000);
+            }
         }
 
-        // Initialize slideshow
-        showSlide();
-        slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+        // Load products when page loads
+        window.addEventListener('DOMContentLoaded', loadProducts);
 
         // Pause slideshow on hover or focus for accessibility (WCAG compliance)
         const slideshowContainer = document.querySelector('.slideshow-container');
