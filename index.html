@@ -115,9 +115,10 @@
             margin: 0 5px;
             background-color: #bbb;
             border-radius: 50%;
-            display: inline-block;
             cursor: pointer;
             transition: background-color 0.3s;
+            border: none;
+            padding: 0;
         }
 
         .dot.active {
@@ -143,6 +144,7 @@
             user-select: none;
             background-color: rgba(0, 0, 0, 0.3);
             z-index: 10;
+            border: none;
         }
 
         .next {
@@ -201,8 +203,8 @@
         </header>
 
         <div class="slideshow-container">
-            <a class="prev" onclick="changeSlide(-1)" aria-label="Previous slide" role="button" tabindex="0">&#10094;</a>
-            <a class="next" onclick="changeSlide(1)" aria-label="Next slide" role="button" tabindex="0">&#10095;</a>
+            <button class="prev" onclick="changeSlide(-1)" aria-label="Previous slide">&#10094;</button>
+            <button class="next" onclick="changeSlide(1)" aria-label="Next slide">&#10095;</button>
 
             <div class="slide active">
                 <div class="product-icon">🚀</div>
@@ -260,11 +262,11 @@
             </div>
 
             <div class="dots-container">
-                <span class="dot active" onclick="setSlide(0)" role="button" aria-label="Go to slide 1" tabindex="0"></span>
-                <span class="dot" onclick="setSlide(1)" role="button" aria-label="Go to slide 2" tabindex="0"></span>
-                <span class="dot" onclick="setSlide(2)" role="button" aria-label="Go to slide 3" tabindex="0"></span>
-                <span class="dot" onclick="setSlide(3)" role="button" aria-label="Go to slide 4" tabindex="0"></span>
-                <span class="dot" onclick="setSlide(4)" role="button" aria-label="Go to slide 5" tabindex="0"></span>
+                <button class="dot active" onclick="setSlide(0)" aria-label="Go to slide 1"></button>
+                <button class="dot" onclick="setSlide(1)" aria-label="Go to slide 2"></button>
+                <button class="dot" onclick="setSlide(2)" aria-label="Go to slide 3"></button>
+                <button class="dot" onclick="setSlide(3)" aria-label="Go to slide 4"></button>
+                <button class="dot" onclick="setSlide(4)" aria-label="Go to slide 5"></button>
             </div>
         </div>
 
@@ -278,7 +280,7 @@
         let currentSlide = 0;
         let slideInterval;
 
-        function showSlide(n) {
+        function showSlide() {
             const slides = document.getElementsByClassName('slide');
             const dots = document.getElementsByClassName('dot');
 
@@ -302,19 +304,19 @@
 
         function changeSlide(n) {
             currentSlide += n;
-            showSlide(currentSlide);
+            showSlide();
             resetInterval();
         }
 
         function setSlide(n) {
             currentSlide = n;
-            showSlide(currentSlide);
+            showSlide();
             resetInterval();
         }
 
         function nextSlide() {
             currentSlide++;
-            showSlide(currentSlide);
+            showSlide();
         }
 
         function resetInterval() {
@@ -322,42 +324,8 @@
             slideInterval = setInterval(nextSlide, 5000);
         }
 
-        // Keyboard accessibility for navigation elements
-        document.addEventListener('DOMContentLoaded', function() {
-            const prevBtn = document.querySelector('.prev');
-            const nextBtn = document.querySelector('.next');
-            const dots = document.querySelectorAll('.dot');
-
-            if (prevBtn) {
-                prevBtn.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        changeSlide(-1);
-                    }
-                });
-            }
-
-            if (nextBtn) {
-                nextBtn.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        changeSlide(1);
-                    }
-                });
-            }
-
-            dots.forEach(function(dot, index) {
-                dot.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setSlide(index);
-                    }
-                });
-            });
-        });
-
         // Initialize slideshow
-        showSlide(currentSlide);
+        showSlide();
         slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
     </script>
 </body>
