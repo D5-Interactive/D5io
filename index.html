@@ -291,15 +291,17 @@
                 currentSlide = slides.length - 1;
             }
 
-            // Hide all slides
+            // Hide all slides and remove aria-current
             for (let i = 0; i < slides.length; i++) {
                 slides[i].classList.remove('active');
                 dots[i].classList.remove('active');
+                dots[i].removeAttribute('aria-current');
             }
 
-            // Show current slide
+            // Show current slide and set aria-current
             slides[currentSlide].classList.add('active');
             dots[currentSlide].classList.add('active');
+            dots[currentSlide].setAttribute('aria-current', 'true');
         }
 
         function changeSlide(n) {
@@ -324,9 +326,24 @@
             slideInterval = setInterval(nextSlide, 5000);
         }
 
+        function pauseSlideshow() {
+            clearInterval(slideInterval);
+        }
+
+        function resumeSlideshow() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
         // Initialize slideshow
         showSlide();
         slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+
+        // Pause slideshow on hover or focus for accessibility (WCAG compliance)
+        const slideshowContainer = document.querySelector('.slideshow-container');
+        slideshowContainer.addEventListener('mouseenter', pauseSlideshow);
+        slideshowContainer.addEventListener('mouseleave', resumeSlideshow);
+        slideshowContainer.addEventListener('focusin', pauseSlideshow);
+        slideshowContainer.addEventListener('focusout', resumeSlideshow);
     </script>
 </body>
 </html>
