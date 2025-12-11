@@ -55,9 +55,30 @@
 
         .slide {
             display: none;
-            padding: 60px 40px;
-            text-align: center;
+            padding: 40px;
+            text-align: left;
             animation: fadeIn 1s;
+            max-height: 600px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .slide::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slide::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .slide::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .slide::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
         }
 
         .slide.active {
@@ -73,26 +94,114 @@
             color: #667eea;
             font-size: 2.5em;
             margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .slide h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .slide h4 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin-top: 20px;
+            margin-bottom: 10px;
         }
 
         .slide p {
-            font-size: 1.2em;
+            font-size: 1.1em;
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             line-height: 1.8;
+        }
+
+        .slide ul, .slide ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .slide li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .slide pre {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .slide code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .slide pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .slide blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        .slide table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        .slide table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .slide table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .slide table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .slide hr {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 30px 0;
         }
 
         .product-icon {
             font-size: 5em;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .features {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 10px;
             flex-wrap: wrap;
             margin-top: 20px;
+            text-align: center;
         }
 
         .feature-tag {
@@ -178,11 +287,20 @@
             }
 
             .slide {
-                padding: 40px 20px;
+                padding: 30px 20px;
+                max-height: 500px;
             }
 
             .slide h2 {
                 font-size: 1.8em;
+            }
+
+            .slide h3 {
+                font-size: 1.4em;
+            }
+
+            .slide h4 {
+                font-size: 1.2em;
             }
 
             .slide p {
@@ -191,6 +309,15 @@
 
             .product-icon {
                 font-size: 3em;
+            }
+
+            .slide table {
+                font-size: 0.85em;
+            }
+
+            .slide table th,
+            .slide table td {
+                padding: 8px;
             }
         }
     </style>
@@ -222,26 +349,167 @@
         let slideInterval;
         let slidesLoaded = false;
 
-        // Simple markdown parser for basic formatting
+        // Enhanced markdown parser for comprehensive formatting
         function parseMarkdown(text) {
-            // Convert basic markdown to HTML
-            let html = text;
+            let lines = text.split('\n');
+            let html = '';
+            let inCodeBlock = false;
+            let inTable = false;
+            let inList = false;
+            let codeBlockContent = '';
+            let tableRows = [];
+            let listItems = [];
             
-            // Bold: **text** or __text__
-            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                
+                // Handle code blocks
+                if (line.trim().startsWith('```')) {
+                    if (!inCodeBlock) {
+                        inCodeBlock = true;
+                        codeBlockContent = '';
+                    } else {
+                        html += '<pre><code>' + escapeHtml(codeBlockContent) + '</code></pre>';
+                        inCodeBlock = false;
+                        codeBlockContent = '';
+                    }
+                    continue;
+                }
+                
+                if (inCodeBlock) {
+                    codeBlockContent += line + '\n';
+                    continue;
+                }
+                
+                // Close list if needed
+                if (inList && !line.trim().startsWith('-') && !line.trim().startsWith('*') && !line.trim().startsWith('+') && line.trim() !== '') {
+                    html += '<ul>' + listItems.join('') + '</ul>';
+                    inList = false;
+                    listItems = [];
+                }
+                
+                // Handle tables
+                if (line.trim().startsWith('|')) {
+                    if (!inTable) {
+                        inTable = true;
+                        tableRows = [];
+                    }
+                    tableRows.push(line);
+                    // Check if next line is not a table row
+                    if (i + 1 >= lines.length || !lines[i + 1].trim().startsWith('|')) {
+                        html += parseTable(tableRows);
+                        inTable = false;
+                        tableRows = [];
+                    }
+                    continue;
+                }
+                
+                // Handle headings
+                if (line.trim().startsWith('####')) {
+                    html += '<h4>' + parseInline(line.replace(/^####\s*/, '')) + '</h4>';
+                } else if (line.trim().startsWith('###')) {
+                    html += '<h3>' + parseInline(line.replace(/^###\s*/, '')) + '</h3>';
+                } else if (line.trim().startsWith('##')) {
+                    html += '<h3>' + parseInline(line.replace(/^##\s*/, '')) + '</h3>';
+                } else if (line.trim().startsWith('#')) {
+                    html += '<h2>' + parseInline(line.replace(/^#\s*/, '')) + '</h2>';
+                }
+                // Handle horizontal rules
+                else if (line.trim() === '---' || line.trim() === '***') {
+                    html += '<hr>';
+                }
+                // Handle blockquotes
+                else if (line.trim().startsWith('>')) {
+                    html += '<blockquote>' + parseInline(line.replace(/^>\s*/, '')) + '</blockquote>';
+                }
+                // Handle unordered lists
+                else if (line.trim().match(/^[-*+]\s/)) {
+                    if (!inList) {
+                        inList = true;
+                    }
+                    listItems.push('<li>' + parseInline(line.replace(/^[-*+]\s*/, '')) + '</li>');
+                }
+                // Handle ordered lists
+                else if (line.trim().match(/^\d+\.\s/)) {
+                    html += '<p>' + parseInline(line) + '</p>';
+                }
+                // Handle empty lines
+                else if (line.trim() === '') {
+                    if (inList) {
+                        html += '<ul>' + listItems.join('') + '</ul>';
+                        inList = false;
+                        listItems = [];
+                    }
+                    // Skip empty lines
+                }
+                // Regular paragraphs
+                else {
+                    html += '<p>' + parseInline(line) + '</p>';
+                }
+            }
             
-            // Italic: *text* or _text_
-            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-            html = html.replace(/_(.+?)_/g, '<em>$1</em>');
-            
-            // Links: [text](url)
-            html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
-            
-            // Line breaks
-            html = html.replace(/\n/g, '<br>');
+            // Close any open list
+            if (inList) {
+                html += '<ul>' + listItems.join('') + '</ul>';
+            }
             
             return html;
+        }
+        
+        function parseInline(text) {
+            // Bold: **text** or __text__
+            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            
+            // Italic: *text* or _text_ (but not in URLs or already processed bold)
+            text = text.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em>$1</em>');
+            
+            // Inline code: `code`
+            text = text.replace(/`([^`]+?)`/g, '<code>$1</code>');
+            
+            // Links: [text](url)
+            text = text.replace(/\[([^\]]+?)\]\(([^)]+?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            return text;
+        }
+        
+        function parseTable(rows) {
+            if (rows.length < 2) return '';
+            
+            let html = '<table>';
+            
+            // Parse header
+            let headerCells = rows[0].split('|').filter(cell => cell.trim() !== '');
+            html += '<thead><tr>';
+            headerCells.forEach(cell => {
+                html += '<th>' + parseInline(cell.trim()) + '</th>';
+            });
+            html += '</tr></thead>';
+            
+            // Skip separator row (row 1)
+            html += '<tbody>';
+            for (let i = 2; i < rows.length; i++) {
+                let cells = rows[i].split('|').filter(cell => cell.trim() !== '');
+                html += '<tr>';
+                cells.forEach(cell => {
+                    html += '<td>' + parseInline(cell.trim()) + '</td>';
+                });
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            
+            return html;
+        }
+        
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
         }
 
         // Parse frontmatter from markdown content
