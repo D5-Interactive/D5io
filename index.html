@@ -129,6 +129,10 @@
             line-height: 1.6;
         }
 
+        .slide ol {
+            list-style-type: decimal;
+        }
+
         .slide pre {
             background: #f5f5f5;
             border-left: 4px solid #667eea;
@@ -356,9 +360,11 @@
             let inCodeBlock = false;
             let inTable = false;
             let inList = false;
+            let inOrderedList = false;
             let codeBlockContent = '';
             let tableRows = [];
             let listItems = [];
+            let orderedListItems = [];
             
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
@@ -381,11 +387,18 @@
                     continue;
                 }
                 
-                // Close list if needed
+                // Close unordered list if needed
                 if (inList && !line.trim().startsWith('-') && !line.trim().startsWith('*') && !line.trim().startsWith('+') && line.trim() !== '') {
                     html += '<ul>' + listItems.join('') + '</ul>';
                     inList = false;
                     listItems = [];
+                }
+                
+                // Close ordered list if needed
+                if (inOrderedList && !line.trim().match(/^\d+\.\s/) && line.trim() !== '') {
+                    html += '<ol>' + orderedListItems.join('') + '</ol>';
+                    inOrderedList = false;
+                    orderedListItems = [];
                 }
                 
                 // Handle tables
@@ -431,7 +444,10 @@
                 }
                 // Handle ordered lists
                 else if (line.trim().match(/^\d+\.\s/)) {
-                    html += '<p>' + parseInline(line) + '</p>';
+                    if (!inOrderedList) {
+                        inOrderedList = true;
+                    }
+                    orderedListItems.push('<li>' + parseInline(line.replace(/^\d+\.\s*/, '')) + '</li>');
                 }
                 // Handle empty lines
                 else if (line.trim() === '') {
@@ -439,6 +455,11 @@
                         html += '<ul>' + listItems.join('') + '</ul>';
                         inList = false;
                         listItems = [];
+                    }
+                    if (inOrderedList) {
+                        html += '<ol>' + orderedListItems.join('') + '</ol>';
+                        inOrderedList = false;
+                        orderedListItems = [];
                     }
                     // Skip empty lines
                 }
@@ -452,6 +473,9 @@
             if (inList) {
                 html += '<ul>' + listItems.join('') + '</ul>';
             }
+            if (inOrderedList) {
+                html += '<ol>' + orderedListItems.join('') + '</ol>';
+            }
             
             return html;
         }
@@ -462,7 +486,8 @@
             text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
             
             // Italic: *text* or _text_ (but not in URLs or already processed bold)
-            text = text.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em>$1</em>');
+            // Use a simpler pattern that works in all browsers
+            text = text.replace(/\b\*([^*]+?)\*\b/g, '<em>$1</em>');
             
             // Inline code: `code`
             text = text.replace(/`([^`]+?)`/g, '<code>$1</code>');
@@ -474,7 +499,11 @@
         }
         
         function parseTable(rows) {
-            if (rows.length < 2) return '';
+            // Validate table structure (need at least header + separator + 1 data row)
+            if (rows.length < 3) {
+                console.warn('Invalid table structure: need at least 3 rows (header, separator, data)');
+                return '';
+            }
             
             let html = '<table>';
             
@@ -563,8 +592,8 @@
             title.textContent = product.title || 'Product';
             slide.appendChild(title);
             
-            // Add description (rendered markdown)
-            const description = document.createElement('p');
+            // Add description (rendered markdown) - use div instead of p for block-level elements
+            const description = document.createElement('div');
             description.innerHTML = parseMarkdown(product.body || '');
             slide.appendChild(description);
             
