@@ -1,5 +1,5 @@
 ---
-icon: ⚡
+icon: assets/icons/lightning.ico
 title: API Gateway
 tags: [High Performance, Rate Limiting, Analytics]
 ---

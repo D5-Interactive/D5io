@@ -1,5 +1,5 @@
 ---
-icon: 🔒
+icon: assets/icons/lock.ico
 title: Security Framework
 tags: [Enterprise Security, Compliance Ready, Zero Trust]
 ---
