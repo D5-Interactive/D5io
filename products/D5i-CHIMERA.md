@@ -1,3 +1,9 @@
+---
+icon: assets/icons/shield.ico
+title: D5i-CHIMERA
+tags: [Security, GitHub, Automation, DevOps]
+---
+
 # D5i-CHIMERA
 
 ## Security Sentinel for GitHub
@@ -22,25 +28,29 @@ D5i-CHIMERA watches over every pull request like a tireless stone guardian--catc
 
 ### Security Scanning (4 Core Engines)
 
-**Secrets Detection & Validation**
+#### Secrets Detection & Validation
+
 - Finds exposed AWS keys, GitHub tokens, API credentials, database passwords
 - Validates which secrets are still ACTIVE (eliminating 90% of false alarms)
 - Integrates with AWS STS, GitHub API, and generic HTTP endpoints
 - Result: Real threats flagged immediately, false positives eliminated
 
-**License Compliance**
+#### License Compliance
+
 - Scans all dependencies (npm, pip, go, ruby, maven)
 - Blocks PRs with incompatible licenses (GPL-3.0, AGPL-3.0, custom)
 - Configurable blocklists per organization
 - Result: Legal risk eliminated before code ships
 
-**Infrastructure-as-Code Scanning**
+#### Infrastructure-as-Code Scanning
+
 - Analyzes Terraform and CloudFormation files with Checkov
 - Detects security misconfigurations (open S3 buckets, unencrypted DBs, etc.)
 - Configurable severity thresholds and skip rules
 - Result: IaC vulnerabilities caught in code review, not in production
 
-**Compliance Enforcement**
+#### Compliance Enforcement
+
 - Ensures every repo has required documentation (SECURITY.md, LICENSE, CODEOWNERS)
 - Validates file freshness (outdated security policies get flagged)
 - Blocks merges until compliance standards met
@@ -48,19 +58,22 @@ D5i-CHIMERA watches over every pull request like a tireless stone guardian--catc
 
 ### Smart Integration
 
-**GitHub Native**
+#### GitHub Native
+
 - Posts findings directly in PR comments
 - Creates Check Runs with detailed annotations
 - Blocks dangerous merges intelligently
 - Zero friction--developers never leave GitHub
 
-**Configurable**
+#### Configurable
+
 - One `.github/security-config.yml` per repo
 - Enable/disable scanners independently
 - Set severity thresholds and custom blocklists
 - Org-wide defaults with per-repo overrides
 
-**Fast**
+#### Fast
+
 - Parallel scanning engines (all 4 run simultaneously)
 - Target execution time: under 120 seconds
 - Graceful degradation on timeout (partial results > no results)
@@ -80,20 +93,26 @@ D5i-CHIMERA watches over every pull request like a tireless stone guardian--catc
 
 ## Pricing
 
+
 ### Free Tier
+
 - 5,000 scans/month
 - All 4 core scanners
 - Basic configuration via YAML
 - Community support
 
+
 ### Pro ($29/month)
+
 - Unlimited scans
 - Token validation (premium feature)
 - Custom IaC policies (Policy-as-Code editor)
 - Slack and email alerts
 - Priority support
 
+
 ### Enterprise ($199+/month)
+
 - Everything in Pro, plus:
 - Drift Detection (infrastructure state vs. code)
 - Cloud Privilege Reporter (IAM analysis)
@@ -175,8 +194,8 @@ iac:
 - [Configuration Guide](docs/CONFIG.md)
 - [API Reference](docs/API.md)
 - [GitHub Issues](https://github.com/d5i-chimera/app/issues)
-- [Community Slack](#)
-- [Email Support](support@d5i-chimera.io)
+- [Community Slack](https://slack.d5i-chimera.io)
+- [Email Support](mailto:support@d5i-chimera.io)
 
 ---
 
@@ -191,4 +210,4 @@ iac:
 
 ---
 
-*D5i-CHIMERA is actively developed and in Alpha. Security improvements and features shipped weekly. Questions? Email hello@d5i-chimera.io*
+*D5i-CHIMERA is actively developed and in Alpha. Security improvements and features shipped weekly. Questions? Email [hello@d5i-chimera.io](mailto:hello@d5i-chimera.io)*

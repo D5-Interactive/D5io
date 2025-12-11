@@ -1,5 +1,5 @@
 ---
-icon: 🚀
+icon: assets/icons/rocket.ico
 title: Cloud Platform
 tags: [Scalable, Secure, 24/7 Support]
 ---

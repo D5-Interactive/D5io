@@ -1,5 +1,5 @@
 ---
-icon: 🤖
+icon: assets/icons/robot.ico
 title: AI Assistant
 tags: [Machine Learning, Automation, Natural Language]
 ---
