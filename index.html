@@ -438,6 +438,43 @@
             transform: scale(1.05);
         }
 
+        /* Download buttons */
+        .downloads {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            color: var(--theme-glow);
+            border: 1px solid var(--theme-bright);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: var(--theme-mist);
+            border-color: var(--theme-glow);
+            box-shadow: 0 0 10px rgba(77, 255, 124, 0.3);
+            transform: scale(1.05);
+        }
+
+        .download-btn::before {
+            content: '↓';
+            font-weight: 700;
+        }
+
         /* Dots navigation */
         .dots-container {
             display: flex;
@@ -811,6 +848,29 @@
                 card.appendChild(f);
             }
             
+            if (product.downloads && product.downloads.length) {
+                const dl = document.createElement('div');
+                dl.className = 'downloads';
+                product.downloads.forEach(entry => {
+                    const parts = entry.split('|');
+                    if (parts.length < 2) {
+                        console.warn('Skipping malformed download entry:', entry);
+                        return;
+                    }
+                    const label = parts[0].trim();
+                    const url = parts[1].trim();
+                    const filename = url.split('/').pop() || label;
+                    const a = document.createElement('a');
+                    a.className = 'download-btn';
+                    a.href = url;
+                    a.textContent = label;
+                    a.setAttribute('download', filename);
+                    a.setAttribute('rel', 'noopener noreferrer');
+                    dl.appendChild(a);
+                });
+                card.appendChild(dl);
+            }
+            
             return card;
         }
 
@@ -839,6 +899,7 @@
                             icon: frontmatter.icon,
                             title: frontmatter.title,
                             tags: frontmatter.tags || [],
+                            downloads: frontmatter.downloads || [],
                             body: body.trim()
                         });
                     } catch (e) {
